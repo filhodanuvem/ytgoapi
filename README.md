@@ -20,4 +20,5 @@ Agora que você sabe como criar uma API simples, encontre desafios mais interess
 ## Como contribuir 
 
 Mande seu pull request pra qualquer melhoria (definida nas issues ou não). 
-:warning Não é preciso avisar que vai trabalhar numa issue, apenas mande a pull request :wink. 
+
+:warning: Não é preciso avisar que vai trabalhar numa issue, apenas mande a pull request :wink. 
