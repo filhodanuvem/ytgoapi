@@ -13,9 +13,9 @@ go run cmd/api/main.go
 
 ## Próximo passo 
 
-Agora que você sabe como criar uma API simples, encontre desafios mais interessantes em [devgym.com.br](https://app.devgym.com.br?utm_campaign=rinhaback&utm_medium=social&utm_source=github). 
+Agora que você sabe como criar uma API simples, encontre desafios mais interessantes em [devgym.com.br](https://app.devgym.com.br?utm_campaign=ytgoapi&utm_medium=social&utm_source=github). 
 
-[![](https://raw.githubusercontent.com/devgymbr/files/main/devgymblack.png)](https://app.devgym.com.br?utm_campaign=rinhaback&utm_medium=social&utm_source=github)
+[![](https://raw.githubusercontent.com/devgymbr/files/main/devgymblack.png)](https://app.devgym.com.br?utm_campaign=ytgoapi&utm_medium=social&utm_source=github)
 
 ## Como contribuir 
 
