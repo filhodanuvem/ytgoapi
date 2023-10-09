@@ -4,9 +4,10 @@
 
 Subir banco de dados
 ```
-docker-compose run 
+docker-compose up -d 
 ```
 
+Pra Rodar o projeto
 ```
 go run cmd/api/main.go
 ```
