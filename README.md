@@ -5,7 +5,7 @@
 Subir banco de dados
 ```
 docker-compose run 
-``
+```
 
 ```
 go run cmd/api/main.go
