@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	connectionString := "postgresql://posts:p0stgr3s@localhost:5432/posts"
+	connectionString := "postgresql://posts:p0stgr3s@db:5432/posts"
 	conn, err := database.NewConnection(connectionString)
 	if err != nil {
 		panic(err)
