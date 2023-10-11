@@ -8,8 +8,8 @@ import (
 	"github.com/filhodanuvem/ytgoapi/internal"
 	"github.com/google/uuid"
 
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/jackc/pgx/v5"
 )
 
 type Repository struct {
@@ -17,7 +17,6 @@ type Repository struct {
 }
 
 func (r *Repository) Insert(post internal.Post) error {
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
