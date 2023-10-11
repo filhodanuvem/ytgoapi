@@ -14,7 +14,7 @@ var service post.Service
 
 func Configure() {
 	service = post.Service{
-		Repository: post.Repository{
+		Repository: &post.RepositoryPostgres{
 			Conn: database.Conn,
 		},
 	}

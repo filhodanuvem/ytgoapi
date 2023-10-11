@@ -7,9 +7,14 @@ Subir banco de dados
 docker-compose up -d 
 ```
 
-Pra Rodar o projeto
+Para Rodar o projeto
 ```
 go run cmd/api/main.go
+```
+
+Para Rodar os testes unitários
+```
+go test ./...
 ```
 
 ## Próximo passo 
