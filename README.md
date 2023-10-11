@@ -2,17 +2,12 @@
 
 ## Como rodar 
 
-Subir banco de dados
+Para rodar o projeto e o banco de dados
 ```
 docker-compose up -d 
 ```
 
-Para Rodar o projeto
-```
-go run cmd/api/main.go
-```
-
-Para Rodar os testes unitários
+Para rodar os testes unitários
 ```
 go test ./...
 ```
