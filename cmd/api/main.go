@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/filhodanuvem/ytgoapi/internal/configs"
 	"github.com/filhodanuvem/ytgoapi/internal/database"
 	"github.com/filhodanuvem/ytgoapi/internal/http"
