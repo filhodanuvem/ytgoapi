@@ -29,14 +29,16 @@ func PostPosts(ctx *gin.Context) {
 		return
 	}
 
-	if err := service.Create(post); err != nil {
+	response, err := service.Create(post)
+
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, nil)
+	ctx.JSON(http.StatusCreated, response)
 }
 
 func DeletePosts(ctx *gin.Context) {
