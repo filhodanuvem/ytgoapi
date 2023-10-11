@@ -119,6 +119,8 @@ func TestServiceCreate_ShouldBeSuccessful_WhenPostPassOnValidation(t *testing.T)
 }
 
 func TestServiceDelete_ShouldReturnError_WhenPostNotFound(t *testing.T) {
+	defer repo.Clear()
+
 	sut := createNewService()
 	id := uuid.New()
 
@@ -144,6 +146,8 @@ func TestServiceDelete_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T) {
 }
 
 func TestServiceFindOneByID_ShouldReturnError_WhenPostNotFound(t *testing.T) {
+	defer repo.Clear()
+
 	sut := createNewService()
 	id := uuid.New()
 
