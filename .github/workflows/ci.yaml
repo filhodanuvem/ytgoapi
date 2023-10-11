@@ -18,6 +18,8 @@ jobs:
         go-version-file: go.mod
     - name: Build
       run: go build -v ./...
+    - name: Test
+      run: go test ./...
   
   check:
     needs: build
