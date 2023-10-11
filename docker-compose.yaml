@@ -23,3 +23,12 @@ services:
       - "3001:8081" 
     environment:
       - PGWEB_DATABASE_URL=postgresql://posts:p0stgr3s@db:5432/posts?sslmode=disable
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy

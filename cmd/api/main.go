@@ -11,8 +11,6 @@ import (
 
 func main() {
 	connectionString := configs.ReadConfig()
-
-	fmt.Println(connectionString)
 	conn, err := database.NewConnection(connectionString)
 	if err != nil {
 		panic(err)
