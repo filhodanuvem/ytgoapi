@@ -11,11 +11,17 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type Repository struct {
+type Repository interface {
+	Insert(post internal.Post) (internal.Post, error)
+	FindOneByID(id uuid.UUID) (internal.Post, error)
+	Delete(id uuid.UUID) error
+}
+
+type RepositoryPostgres struct {
 	Conn *pgxpool.Pool
 }
 
-func (r *Repository) Insert(post internal.Post) (internal.Post, error) {
+func (r *RepositoryPostgres) Insert(post internal.Post) (internal.Post, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -32,7 +38,7 @@ func (r *Repository) Insert(post internal.Post) (internal.Post, error) {
 	return post, nil
 }
 
-func (r *Repository) Delete(id uuid.UUID) error {
+func (r *RepositoryPostgres) Delete(id uuid.UUID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -48,7 +54,7 @@ func (r *Repository) Delete(id uuid.UUID) error {
 	return err
 }
 
-func (r *Repository) FindOneByID(id uuid.UUID) (internal.Post, error) {
+func (r *RepositoryPostgres) FindOneByID(id uuid.UUID) (internal.Post, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
