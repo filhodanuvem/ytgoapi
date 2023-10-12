@@ -6,9 +6,8 @@ import (
 
 	"github.com/filhodanuvem/ytgoapi/internal"
 	"github.com/google/uuid"
-
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/jackc/pgx/v5"
 )
 
 type Repository interface {
@@ -30,7 +29,6 @@ func (r *RepositoryPostgres) Insert(post internal.Post) (internal.Post, error) {
 		"INSERT INTO posts (username, body) VALUES ($1, $2) RETURNING id",
 		post.Username,
 		post.Body).Scan(&post.ID)
-
 	if err != nil {
 		return internal.Post{}, err
 	}
