@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/filhodanuvem/ytgoapi/config"
 	"github.com/filhodanuvem/ytgoapi/internal/database"
 
 	"github.com/filhodanuvem/ytgoapi/internal/http"
@@ -8,8 +9,11 @@ import (
 )
 
 func main() {
-	connectionString := "postgresql://posts:p0stgr3s@db:5432/posts"
-	conn, err := database.NewConnection(connectionString)
+	cfg, err := config.ReadConfig()
+	if err != nil {
+		panic(err)
+	}
+	conn, err := database.NewConnection(cfg.GetPostgresConnectionString())
 	if err != nil {
 		panic(err)
 	}
