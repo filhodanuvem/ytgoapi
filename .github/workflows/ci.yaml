@@ -27,4 +27,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: docker-compose up -d
+    - if: failure()
+      run: docker-compose ps
+    - if: failure()
+      run: docker-compose logs
     - run: curl -X POST -d '{"username":"test","body":"adasd"}' http://localhost:8080/posts
