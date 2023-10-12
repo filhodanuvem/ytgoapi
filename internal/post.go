@@ -23,6 +23,10 @@ func (p *ParamsUpdatePost) Validate() (Post, error) {
 		return Post{}, errors.New("id empty")
 	}
 
+	if utf8.RuneCountInString(p.Body) > 140 {
+		return internal.Post{}, ErrPostBodyExceedsLimit
+	}
+
 	return Post{
 		ID:       p.ID,
 		Username: p.Username,

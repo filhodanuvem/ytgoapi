@@ -81,7 +81,7 @@ func (r *RepositoryPostgres) FindAll(ctx context.Context) ([]*internal.Post, err
 func (r *RepositoryPostgres) Update(ctx context.Context, post internal.Post) error {
 	_, err := r.Conn.Exec(
 		ctx,
-		"update post SET username=$1, body=$2 where id=$3",
+		`update "post" SET "username"= COALESCE($1, "username"), "body"= COALESCE($2, "body") where id=$3`,
 		post.Username,
 		post.Body,
 		post.ID,
