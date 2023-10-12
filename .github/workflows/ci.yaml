@@ -27,4 +27,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: docker-compose up -d
-    - run: curl -X POST -d '{"username":"test","body":"adasd"}' http://localhost:3000/posts
+    - run: curl -X POST -d '{"username":"test","body":"adasd"}' http://localhost:8080/posts
