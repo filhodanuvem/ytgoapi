@@ -28,7 +28,19 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
+      - "8080:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+  air_api:
+    image: cosmtrek/air
+    working_dir: /app
+    ports:
       - "3000:3000"
+    healthcheck:
+      test: curl -fsS localhost:3000/health
+    volumes:
+      - ./:/app
     depends_on:
       db:
         condition: service_healthy
