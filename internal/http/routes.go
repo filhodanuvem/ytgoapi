@@ -14,4 +14,6 @@ func SetRoutes(g *gin.Engine) {
 	g.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+	g.GET("/posts", GetAll)
+	g.PUT("/posts/:id", Update)
 }
