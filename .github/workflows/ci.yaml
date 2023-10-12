@@ -31,3 +31,4 @@ jobs:
       run: docker-compose ps
     - if: failure()
       run: docker-compose logs
+    - run: curl -X POST -d '{"username":"test","body":"adasd"}' http://localhost:8080/posts
