@@ -9,7 +9,10 @@ import (
 )
 
 func main() {
-	cfg, _ := config.ReadConfig()
+	cfg, err := config.ReadConfig()
+	if err != nil {
+		panic(err)
+	}
 	conn, err := database.NewConnection(cfg.GetPostgresConnectionString())
 	if err != nil {
 		panic(err)
