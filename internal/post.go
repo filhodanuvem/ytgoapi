@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 	"time"
+	"unicode/utf8"
 )
 
 type Post struct {
@@ -18,13 +19,15 @@ type ParamsUpdatePost struct {
 	Body     string
 }
 
+var ErrPostBodyExceedsLimit = errors.New("post body exceeds limit")
+
 func (p *ParamsUpdatePost) Validate() (Post, error) {
 	if p.ID == "" {
 		return Post{}, errors.New("id empty")
 	}
 
 	if utf8.RuneCountInString(p.Body) > 140 {
-		return internal.Post{}, ErrPostBodyExceedsLimit
+		return Post{}, ErrPostBodyExceedsLimit
 	}
 
 	return Post{
