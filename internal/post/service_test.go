@@ -16,7 +16,7 @@ type repositorySpy struct {
 	items map[string]internal.Post
 }
 
-func (r *repositorySpy) Insert(post internal.Post) (internal.Post, error) {
+func (r *repositorySpy) Insert(ctx context.Context, post internal.Post) (internal.Post, error) {
 	id := uuid.NewString()
 
 	post.ID = id
@@ -25,8 +25,8 @@ func (r *repositorySpy) Insert(post internal.Post) (internal.Post, error) {
 	return post, nil
 }
 
-func (r *repositorySpy) Delete(id string) error {
-	if _, err := r.FindOneByID(id); err != nil {
+func (r *repositorySpy) Delete(ctx context.Context, id string) error {
+	if _, err := r.FindOneByID(ctx, id); err != nil {
 		return err
 	}
 
@@ -34,13 +34,36 @@ func (r *repositorySpy) Delete(id string) error {
 	return nil
 }
 
-func (r *repositorySpy) FindOneByID(id string) (internal.Post, error) {
+func (r *repositorySpy) FindOneByID(ctx context.Context, id string) (internal.Post, error) {
 	post, ok := r.items[id]
 	if !ok {
 		return internal.Post{}, ErrPostNotFound
 	}
 	return post, nil
 }
+
+func (r *repositorySpy) Update(ctx context.Context, post internal.Post) error {
+	postOld, err := r.FindOneByID(ctx, id); err != nil {
+		return err
+	}
+
+	postOld.Username = post.Username
+	postOld.Body = post.Body
+
+	return nil
+}
+
+func(r *repositorySpy)GetAll(ctx context.Context) ([]internal.Post, error) {
+	var items []internal.Post
+
+	for _, v := range r.items {
+		items = append(items, v)
+	}
+
+	return items, nil
+}
+
+
 
 func (r *repositorySpy) CountEntries() int {
 	return len(r.items)
@@ -180,8 +203,6 @@ func TestServiceFindOneByID_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T
 	ctx := context.Background()
 
 	created, _ := sut.Create(ctx, data)
-
-	ctx := context.Background()
 
 	post, _ := sut.FindOneByID(ctx, created.ID)
 

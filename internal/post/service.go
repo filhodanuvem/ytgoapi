@@ -42,7 +42,7 @@ func (s Service) FindOneByID(ctx context.Context, id string) (internal.Post, err
 	return s.Repository.FindOneByID(ctx, id)
 }
 
-func (s Service) FindAll(ctx context.Context) ([]*internal.Post, error) {
+func (s Service) FindAll(ctx context.Context) ([]internal.Post, error) {
 	posts, err := s.Repository.FindAll(ctx)
 	if err != nil {
 		return nil, err

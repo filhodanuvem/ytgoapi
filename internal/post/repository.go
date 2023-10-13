@@ -10,7 +10,7 @@ import (
 
 type Repository interface {
 	Insert(ctx context.Context, post internal.Post) (internal.Post, error)
-	FindAll(ctx context.Context) ([]*internal.Post, error)
+	FindAll(ctx context.Context) ([]internal.Post, error)
 	FindOneByID(ctx context.Context, id string) (internal.Post, error)
 	Update(ctx context.Context, post internal.Post) error
 	Delete(ctx context.Context, id string) error
@@ -47,7 +47,7 @@ func (r *RepositoryPostgres) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *RepositoryPostgres) FindAll(ctx context.Context) ([]*internal.Post, error) {
+func (r *RepositoryPostgres) FindAll(ctx context.Context) ([]internal.Post, error) {
 	rows, err := r.Conn.Query(
 		ctx,
 		"SELECT id, username, body, created_at FROM posts",
@@ -59,7 +59,7 @@ func (r *RepositoryPostgres) FindAll(ctx context.Context) ([]*internal.Post, err
 
 	defer rows.Close()
 
-	var items []*internal.Post
+	var items []internal.Post
 
 	for rows.Next() {
 		var item internal.Post
@@ -68,7 +68,7 @@ func (r *RepositoryPostgres) FindAll(ctx context.Context) ([]*internal.Post, err
 			return nil, err
 		}
 
-		items = append(items, &item)
+		items = append(items, item)
 	}
 
 	if err := rows.Err(); err != nil {
