@@ -2,14 +2,19 @@
 
 ## Como rodar 
 
-Para rodar o projeto e o banco de dados
-```
-docker-compose up -d 
+Para rodar o projeto e o banco de dados em mode de desenvolvimento
+```sh
+make dev
 ```
 
 Para rodar os testes unitários
-```
+```sh
 go test ./...
+```
+
+Para rodar os testes E2E
+```sh
+make up && make e2e
 ```
 
 ## Próximo passo 

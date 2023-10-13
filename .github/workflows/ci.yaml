@@ -16,8 +16,10 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version-file: go.mod
+
     - name: Build
       run: go build -v ./...
+
     - name: Test
       run: go test -v ./...
   
@@ -26,9 +28,20 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
-    - run: docker-compose up -d
-    - run: curl -X POST -d '{"username":"test","body":"adasd"}' http://localhost:8080/posts
+
+    - name: Run project
+      run: make up
+
+    - name: Set up Go for E2E tests
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: go.mod
+
+    - name: Run E2E tests
+      run: make e2e
+
     - if: failure()
       run: docker-compose ps
+
     - if: failure()
       run: docker-compose logs

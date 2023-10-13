@@ -14,12 +14,24 @@ services:
       interval: 3s
       timeout: 5s
       retries: 5
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  db_ui:
+    image: sosedoff/pgweb:0.13.1
+    depends_on: 
+      db:
+        condition: service_healthy
+    ports: 
+      - "3001:8081" 
+    environment:
+      - PGWEB_DATABASE_URL=postgresql://posts:p0stgr3s@db:5432/posts?sslmode=disable
+  air_api:
+    image: cosmtrek/air
+    working_dir: /app
     ports:
-      - "8080:3000"
+      - "3000:3000"
+    healthcheck:
+      test: curl -fsS localhost:3000/health
+    volumes:
+      - ./:/app
     depends_on:
       db:
         condition: service_healthy
