@@ -26,9 +26,9 @@ func (r *RepositoryPostgres) Insert(post internal.Post) (internal.Post, error) {
 
 	err := r.Conn.QueryRow(
 		ctx,
-		"INSERT INTO posts (username, body) VALUES ($1, $2) RETURNING id",
+		"INSERT INTO posts (username, body) VALUES ($1, $2) RETURNING id, created_at",
 		post.Username,
-		post.Body).Scan(&post.ID)
+		post.Body).Scan(&post.ID, &post.CreatedAt)
 	if err != nil {
 		return internal.Post{}, err
 	}
@@ -56,7 +56,7 @@ func (r *RepositoryPostgres) FindOneByID(id uuid.UUID) (internal.Post, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var post internal.Post
+	var post = internal.Post{ID: id}
 	err := r.Conn.QueryRow(
 		ctx,
 		"SELECT username, body, created_at FROM posts WHERE id = $1",
