@@ -1,6 +1,7 @@
 package post
 
 import (
+	"context"
 	"testing"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
@@ -12,11 +13,11 @@ import (
 //
 
 type repositorySpy struct {
-	items map[uuid.UUID]internal.Post
+	items map[string]internal.Post
 }
 
 func (r *repositorySpy) Insert(post internal.Post) (internal.Post, error) {
-	id := uuid.New()
+	id := uuid.NewString()
 
 	post.ID = id
 	r.items[id] = post
@@ -55,7 +56,7 @@ func (r *repositorySpy) Clear() {
 
 func createRepository() *repositorySpy {
 	repo := repositorySpy{}
-	repo.items = make(map[uuid.UUID]internal.Post)
+	repo.items = make(map[string]internal.Post)
 	return &repo
 }
 
@@ -85,7 +86,9 @@ func TestServiceCreate_ShouldReturnError_WhenBodyIsEmpty(t *testing.T) {
 	sut := createNewService()
 	post := internal.Post{}
 
-	_, err := sut.Create(post)
+	ctx := context.Background()
+
+	_, err := sut.Create(ctx, post)
 
 	if err != ErrPostBodyEmpty {
 		t.Fatalf("err not assert ErrPostBodyEmpty")
@@ -98,7 +101,9 @@ func TestServiceCreate_ShouldReturnError_WhenBodyExceedsLimit(t *testing.T) {
 		Body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since",
 	}
 
-	_, err := sut.Create(post)
+	ctx := context.Background()
+
+	_, err := sut.Create(ctx, post)
 
 	if err != ErrPostBodyExceedsLimit {
 		t.Fatalf("err not assert ErrPostBodyExceedsLimit")
@@ -111,7 +116,9 @@ func TestServiceCreate_ShouldBeSuccessful_WhenPostPassOnValidation(t *testing.T)
 	sut := createNewService()
 	post := createValidPost()
 
-	sut.Create(post)
+	ctx := context.Background()
+
+	sut.Create(ctx, post)
 
 	if repo.CountEntries() != 1 {
 		t.Fatalf("Invalid number of entries on repositorySpy")
@@ -122,9 +129,10 @@ func TestServiceDelete_ShouldReturnError_WhenPostNotFound(t *testing.T) {
 	defer repo.Clear()
 
 	sut := createNewService()
-	id := uuid.New()
+	id := uuid.NewString()
+	ctx := context.Background()
 
-	err := sut.Delete(id)
+	err := sut.Delete(ctx, id)
 
 	if err != ErrPostNotFound {
 		t.Fatalf("err not assert ErrPostNotFound")
@@ -138,7 +146,9 @@ func TestServiceDelete_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T) {
 	data := createValidPost()
 	post, _ := sut.Create(data)
 
-	sut.Delete(post.ID)
+	ctx := context.Background()
+
+	sut.Delete(ctx, post.ID)
 
 	if repo.CountEntries() != 0 {
 		t.Fatalf("Invalid number of entries on repositorySpy")
@@ -149,9 +159,11 @@ func TestServiceFindOneByID_ShouldReturnError_WhenPostNotFound(t *testing.T) {
 	defer repo.Clear()
 
 	sut := createNewService()
-	id := uuid.New()
+	id := uuid.NewString()
 
-	_, err := sut.FindOneByID(id)
+	ctx := context.Background()
+
+	_, err := sut.FindOneByID(ctx, id)
 
 	if err != ErrPostNotFound {
 		t.Fatalf("err not assert ErrPostNotFound")
@@ -165,7 +177,9 @@ func TestServiceFindOneByID_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T
 	data := createValidPost()
 	created, _ := sut.Create(data)
 
-	post, _ := sut.FindOneByID(created.ID)
+	ctx := context.Background()
+
+	post, _ := sut.FindOneByID(ctx, created.ID)
 
 	if post.ID != created.ID {
 		t.Fatalf("Invalid post.ID")
