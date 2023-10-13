@@ -25,7 +25,7 @@ func (r *repositorySpy) Insert(post internal.Post) (internal.Post, error) {
 	return post, nil
 }
 
-func (r *repositorySpy) Delete(id uuid.UUID) error {
+func (r *repositorySpy) Delete(id string) error {
 	if _, err := r.FindOneByID(id); err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (r *repositorySpy) Delete(id uuid.UUID) error {
 	return nil
 }
 
-func (r *repositorySpy) FindOneByID(id uuid.UUID) (internal.Post, error) {
+func (r *repositorySpy) FindOneByID(id string) (internal.Post, error) {
 	post, ok := r.items[id]
 	if !ok {
 		return internal.Post{}, ErrPostNotFound
@@ -144,9 +144,10 @@ func TestServiceDelete_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T) {
 
 	sut := createNewService()
 	data := createValidPost()
-	post, _ := sut.Create(data)
 
 	ctx := context.Background()
+
+	post, _ := sut.Create(ctx, data)
 
 	sut.Delete(ctx, post.ID)
 
@@ -175,7 +176,10 @@ func TestServiceFindOneByID_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T
 
 	sut := createNewService()
 	data := createValidPost()
-	created, _ := sut.Create(data)
+
+	ctx := context.Background()
+
+	created, _ := sut.Create(ctx, data)
 
 	ctx := context.Background()
 
