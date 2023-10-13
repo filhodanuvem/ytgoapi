@@ -43,7 +43,7 @@ func (r *repositorySpy) FindOneByID(ctx context.Context, id string) (internal.Po
 }
 
 func (r *repositorySpy) Update(ctx context.Context, post internal.Post) error {
-	postOld, err := r.FindOneByID(ctx, id)
+	postOld, err := r.FindOneByID(ctx, post.ID)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (r *repositorySpy) Update(ctx context.Context, post internal.Post) error {
 	return nil
 }
 
-func (r *repositorySpy) GetAll(ctx context.Context) ([]internal.Post, error) {
+func (r *repositorySpy) FindAll(ctx context.Context) ([]internal.Post, error) {
 	var items []internal.Post
 
 	for _, v := range r.items {
