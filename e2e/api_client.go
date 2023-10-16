@@ -4,15 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 )
+
+var logger = log.Default()
 
 type ApiClient struct {
 	baseUrl string
 }
 
-func NewApiClient(baseUrl string) ApiClient {
-	return ApiClient{baseUrl: baseUrl}
+func NewApiClient() ApiClient {
+	return ApiClient{
+		baseUrl: "http://localhost:8080",
+	}
 }
 
 func (api *ApiClient) Post(path string, data map[string]string) *http.Response {

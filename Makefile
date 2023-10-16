@@ -2,18 +2,13 @@
 up:
 	docker compose up -d
 
-.PHONY: ci
-ci:
-	docker compose up -d --build api
-
 .PHONY: down
 down:
 	docker compose down
 
-.PHONY: e2e
-e2e:
-	go build -o ./tmp/e2e ./cmd/e2e/main.go
-	./tmp/e2e
+.PHONY: ci
+ci:
+	docker compose up -d --build api
 
 .PHONY: runapi
 runapi:
