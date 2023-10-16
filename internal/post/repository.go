@@ -6,6 +6,7 @@ import (
 	"github.com/filhodanuvem/ytgoapi/internal"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+
 )
 
 type Repository interface {
@@ -34,7 +35,9 @@ func (r *RepositoryPostgres) Insert(ctx context.Context, post internal.Post) (in
 	return post, nil
 }
 
+
 func (r *RepositoryPostgres) Delete(ctx context.Context, id string) error {
+
 	tag, err := r.Conn.Exec(
 		ctx,
 		"DELETE FROM posts WHERE id = $1",
@@ -46,6 +49,7 @@ func (r *RepositoryPostgres) Delete(ctx context.Context, id string) error {
 
 	return err
 }
+
 
 func (r *RepositoryPostgres) FindAll(ctx context.Context) ([]internal.Post, error) {
 	rows, err := r.Conn.Query(

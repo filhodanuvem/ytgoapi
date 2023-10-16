@@ -2,7 +2,9 @@ package post
 
 import (
 	"context"
+
 	"sync"
+
 	"testing"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
@@ -19,7 +21,9 @@ type repositorySpy struct {
 }
 
 func (r *repositorySpy) Insert(ctx context.Context, post internal.Post) (internal.Post, error) {
+
 	id := uuid.NewString()
+
 
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -29,7 +33,9 @@ func (r *repositorySpy) Insert(ctx context.Context, post internal.Post) (interna
 	return post, nil
 }
 
+
 func (r *repositorySpy) Delete(ctx context.Context, id string) error {
+
 	if _, err := r.FindOneByID(ctx, id); err != nil {
 		return err
 	}
@@ -38,7 +44,9 @@ func (r *repositorySpy) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
+
 func (r *repositorySpy) FindOneByID(ctx context.Context, id string) (internal.Post, error) {
+
 	post, ok := r.items[id]
 	if !ok {
 		return internal.Post{}, ErrPostNotFound
@@ -136,6 +144,7 @@ func TestServiceCreate_ShouldReturnError_WhenBodyExceedsLimit(t *testing.T) {
 
 	ctx := context.Background()
 
+
 	_, err := sut.Create(ctx, post)
 	if err != ErrPostBodyExceedsLimit {
 		t.Fatalf("err not assert ErrPostBodyExceedsLimit")
@@ -148,9 +157,11 @@ func TestServiceCreate_ShouldBeSuccessful_WhenPostPassOnValidation(t *testing.T)
 	sut := createNewService()
 	post := createValidPost()
 
+
 	ctx := context.Background()
 
 	sut.Create(ctx, post)
+
 
 	if repo.CountEntries() != 1 {
 		t.Fatalf("Invalid number of entries on repositorySpy")
@@ -164,8 +175,9 @@ func TestServiceDelete_ShouldReturnError_WhenPostNotFound(t *testing.T) {
 	id := uuid.NewString()
 	ctx := context.Background()
 
-	err := sut.Delete(ctx, id)
 
+	err := sut.Delete(ctx, id)
+  
 	if err != ErrPostNotFound {
 		t.Fatalf("err not assert ErrPostNotFound")
 	}
@@ -196,7 +208,9 @@ func TestServiceFindOneByID_ShouldReturnError_WhenPostNotFound(t *testing.T) {
 
 	ctx := context.Background()
 
+
 	_, err := sut.FindOneByID(ctx, id)
+
 
 	if err != ErrPostNotFound {
 		t.Fatalf("err not assert ErrPostNotFound")

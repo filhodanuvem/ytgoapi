@@ -64,4 +64,3 @@ func (s Service) Update(ctx context.Context, params *internal.ParamsUpdatePost) 
 	}
 
 	return nil
-}
