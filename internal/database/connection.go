@@ -2,20 +2,27 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/exaring/otelpgx"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var Conn *pgxpool.Pool
 
-func NewConnection(connectionString string) (*pgxpool.Pool, error) {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func NewConnection(ctx context.Context, connectionString string) (*pgxpool.Pool, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	var err error
-	Conn, err = pgxpool.Connect(ctx, connectionString)
+	cfg, err := pgxpool.ParseConfig(connectionString)
+	if err != nil {
+		return nil, fmt.Errorf("create connection pool: %w", err)
+	}
+
+	cfg.ConnConfig.Tracer = otelpgx.NewTracer()
+
+	Conn, err = pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}

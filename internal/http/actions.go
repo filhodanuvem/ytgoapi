@@ -29,7 +29,7 @@ func PostPosts(ctx *gin.Context) {
 		return
 	}
 
-	response, err := service.Create(post)
+	response, err := service.Create(ctx, post)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -48,7 +48,7 @@ func DeletePosts(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, nil)
 	}
 
-	if err := service.Delete(id); err != nil {
+	if err := service.Delete(ctx, id); err != nil {
 		statusCode := http.StatusInternalServerError
 		if err == post.ErrPostNotFound {
 			statusCode = http.StatusNotFound
@@ -70,7 +70,7 @@ func GetPosts(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, nil)
 	}
 
-	p, err := service.FindOneByID(id)
+	p, err := service.FindOneByID(ctx, id)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		if err == post.ErrPostNotFound {
