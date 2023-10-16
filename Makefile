@@ -1,9 +1,9 @@
 .PHONY: up
-dev:
+up:
 	docker compose up -d
 
 .PHONY: ci
-up:
+ci:
 	docker compose up -d --build api
 
 .PHONY: down
