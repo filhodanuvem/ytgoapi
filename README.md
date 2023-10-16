@@ -7,14 +7,9 @@ Para rodar o projeto
 make up
 ```
 
-Para rodar os testes unitários
+Para rodar os testes
 ```sh
 go test ./...
-```
-
-Para rodar os testes E2E
-```sh
-make up && make e2e
 ```
 
 ## Próximo passo 
