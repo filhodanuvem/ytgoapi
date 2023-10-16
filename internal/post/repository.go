@@ -6,22 +6,22 @@ import (
 
 	"github.com/filhodanuvem/ytgoapi/internal"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Repository interface {
-	Insert(post internal.Post) (internal.Post, error)
-	FindOneByID(id uuid.UUID) (internal.Post, error)
-	Delete(id uuid.UUID) error
+	Insert(ctx context.Context, post internal.Post) (internal.Post, error)
+	FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type RepositoryPostgres struct {
 	Conn *pgxpool.Pool
 }
 
-func (r *RepositoryPostgres) Insert(post internal.Post) (internal.Post, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *RepositoryPostgres) Insert(ctx context.Context, post internal.Post) (internal.Post, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	err := r.Conn.QueryRow(
@@ -36,8 +36,8 @@ func (r *RepositoryPostgres) Insert(post internal.Post) (internal.Post, error) {
 	return post, nil
 }
 
-func (r *RepositoryPostgres) Delete(id uuid.UUID) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *RepositoryPostgres) Delete(ctx context.Context, id uuid.UUID) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	tag, err := r.Conn.Exec(
@@ -52,8 +52,8 @@ func (r *RepositoryPostgres) Delete(id uuid.UUID) error {
 	return err
 }
 
-func (r *RepositoryPostgres) FindOneByID(id uuid.UUID) (internal.Post, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *RepositoryPostgres) FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	var post = internal.Post{ID: id}

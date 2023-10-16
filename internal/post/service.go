@@ -1,6 +1,7 @@
 package post
 
 import (
+	"context"
 	"errors"
 	"unicode/utf8"
 
@@ -16,7 +17,7 @@ type Service struct {
 	Repository Repository
 }
 
-func (p Service) Create(post internal.Post) (internal.Post, error) {
+func (p Service) Create(ctx context.Context, post internal.Post) (internal.Post, error) {
 	if post.Body == "" {
 		return internal.Post{}, ErrPostBodyEmpty
 	}
@@ -25,13 +26,13 @@ func (p Service) Create(post internal.Post) (internal.Post, error) {
 		return internal.Post{}, ErrPostBodyExceedsLimit
 	}
 
-	return p.Repository.Insert(post)
+	return p.Repository.Insert(ctx, post)
 }
 
-func (s Service) Delete(id uuid.UUID) error {
-	return s.Repository.Delete(id)
+func (s Service) Delete(ctx context.Context, id uuid.UUID) error {
+	return s.Repository.Delete(ctx, id)
 }
 
-func (s Service) FindOneByID(id uuid.UUID) (internal.Post, error) {
-	return s.Repository.FindOneByID(id)
+func (s Service) FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error) {
+	return s.Repository.FindOneByID(ctx, id)
 }
