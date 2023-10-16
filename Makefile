@@ -1,10 +1,10 @@
-.PHONY: dev
-dev:
-	docker compose -f docker-compose.dev.yaml up -d
-
 .PHONY: up
+dev:
+	docker compose up -d
+
+.PHONY: ci
 up:
-	docker compose -f docker-compose.yaml up -d --build
+	docker compose up -d --build api
 
 .PHONY: down
 down:

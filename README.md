@@ -2,9 +2,9 @@
 
 ## Como rodar 
 
-Para rodar o projeto e o banco de dados em mode de desenvolvimento
+Para rodar o projeto
 ```sh
-make dev
+make up
 ```
 
 Para rodar os testes unitários
