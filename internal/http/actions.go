@@ -93,8 +93,6 @@ func GetPosts(ctx *gin.Context) {
 
 	p, err := service.FindOneByID(ctxTimeout, param)
 
-	p, err := service.FindOneByID(ctx, id)
-
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		if err == post.ErrPostNotFound {
