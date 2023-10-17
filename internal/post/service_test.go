@@ -82,7 +82,7 @@ func (r *repositorySpy) Clear() {
 
 func createRepository() *repositorySpy {
 	repo := repositorySpy{}
-	repo.items = make(map[string]internal.Post)
+	repo.items = make(map[uuid.UUID]internal.Post)
 	repo.mu = sync.Mutex{}
 	return &repo
 }
