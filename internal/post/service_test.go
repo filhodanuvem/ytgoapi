@@ -14,7 +14,7 @@ import (
 //
 
 type repositorySpy struct {
-	items map[string]internal.Post
+	items map[uuid.UUID]internal.Post
 	mu    sync.Mutex
 }
 
@@ -133,8 +133,6 @@ func TestServiceCreate_ShouldReturnError_WhenBodyExceedsLimit(t *testing.T) {
 	}
 
 	_, err := sut.Create(context.TODO(), post)
-
-	_, err := sut.Create(ctx, post)
 	if err != ErrPostBodyExceedsLimit {
 		t.Fatalf("err not assert ErrPostBodyExceedsLimit")
 	}
@@ -158,7 +156,6 @@ func TestServiceDelete_ShouldReturnError_WhenPostNotFound(t *testing.T) {
 
 	sut := createNewService()
 	id := uuid.New()
-	ctx := context.Background()
 
 	err := sut.Delete(context.TODO(), id)
 
