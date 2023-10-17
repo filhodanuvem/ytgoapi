@@ -14,6 +14,7 @@ services:
       interval: 3s
       timeout: 5s
       retries: 5
+
   db_ui:
     image: sosedoff/pgweb:0.13.1
     depends_on: 
@@ -23,6 +24,7 @@ services:
       - "3001:8081" 
     environment:
       - PGWEB_DATABASE_URL=postgresql://posts:p0stgr3s@db:5432/posts?sslmode=disable
+
   api:
     build:
       context: .
@@ -32,6 +34,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
   air_api:
     image: cosmtrek/air
     working_dir: /app
@@ -44,6 +47,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
   jaeger-all-in-one:
     image: jaegertracing/all-in-one:latest
     ports:

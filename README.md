@@ -2,13 +2,13 @@
 
 ## Como rodar 
 
-Para rodar o projeto e o banco de dados
-```
-docker-compose up -d 
+Para rodar o projeto
+```sh
+make up
 ```
 
-Para rodar os testes unitários
-```
+Para rodar os testes
+```sh
 go test ./...
 ```
 
