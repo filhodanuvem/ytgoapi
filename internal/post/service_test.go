@@ -2,9 +2,7 @@ package post
 
 import (
 	"context"
-
 	"sync"
-
 	"testing"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
@@ -21,9 +19,7 @@ type repositorySpy struct {
 }
 
 func (r *repositorySpy) Insert(ctx context.Context, post internal.Post) (internal.Post, error) {
-
-	id := uuid.NewString()
-
+	id := uuid.New()
 
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -33,9 +29,7 @@ func (r *repositorySpy) Insert(ctx context.Context, post internal.Post) (interna
 	return post, nil
 }
 
-
-func (r *repositorySpy) Delete(ctx context.Context, id string) error {
-
+func (r *repositorySpy) Delete(ctx context.Context, id uuid.UUID) error {
 	if _, err := r.FindOneByID(ctx, id); err != nil {
 		return err
 	}
@@ -44,9 +38,7 @@ func (r *repositorySpy) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-
-func (r *repositorySpy) FindOneByID(ctx context.Context, id string) (internal.Post, error) {
-
+func (r *repositorySpy) FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error) {
 	post, ok := r.items[id]
 	if !ok {
 		return internal.Post{}, ErrPostNotFound
@@ -122,9 +114,7 @@ func TestServiceCreate_ShouldReturnError_WhenBodyIsEmpty(t *testing.T) {
 	sut := createNewService()
 	post := internal.Post{}
 
-	ctx := context.Background()
-
-	_, err := sut.Create(ctx, post)
+	_, err := sut.Create(context.TODO(), post)
 
 	if err != ErrPostBodyEmpty {
 		t.Fatalf("err not assert ErrPostBodyEmpty")
@@ -142,8 +132,7 @@ func TestServiceCreate_ShouldReturnError_WhenBodyExceedsLimit(t *testing.T) {
 		Username: "Lorem",
 	}
 
-	ctx := context.Background()
-
+	_, err := sut.Create(context.TODO(), post)
 
 	_, err := sut.Create(ctx, post)
 	if err != ErrPostBodyExceedsLimit {
@@ -157,11 +146,7 @@ func TestServiceCreate_ShouldBeSuccessful_WhenPostPassOnValidation(t *testing.T)
 	sut := createNewService()
 	post := createValidPost()
 
-
-	ctx := context.Background()
-
-	sut.Create(ctx, post)
-
+	sut.Create(context.TODO(), post)
 
 	if repo.CountEntries() != 1 {
 		t.Fatalf("Invalid number of entries on repositorySpy")
@@ -172,12 +157,11 @@ func TestServiceDelete_ShouldReturnError_WhenPostNotFound(t *testing.T) {
 	defer repo.Clear()
 
 	sut := createNewService()
-	id := uuid.NewString()
+	id := uuid.New()
 	ctx := context.Background()
 
+	err := sut.Delete(context.TODO(), id)
 
-	err := sut.Delete(ctx, id)
-  
 	if err != ErrPostNotFound {
 		t.Fatalf("err not assert ErrPostNotFound")
 	}
@@ -188,12 +172,9 @@ func TestServiceDelete_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T) {
 
 	sut := createNewService()
 	data := createValidPost()
+	post, _ := sut.Create(context.TODO(), data)
 
-	ctx := context.Background()
-
-	post, _ := sut.Create(ctx, data)
-
-	sut.Delete(ctx, post.ID)
+	sut.Delete(context.TODO(), post.ID)
 
 	if repo.CountEntries() != 0 {
 		t.Fatalf("Invalid number of entries on repositorySpy")
@@ -204,13 +185,9 @@ func TestServiceFindOneByID_ShouldReturnError_WhenPostNotFound(t *testing.T) {
 	defer repo.Clear()
 
 	sut := createNewService()
-	id := uuid.NewString()
+	id := uuid.New()
 
-	ctx := context.Background()
-
-
-	_, err := sut.FindOneByID(ctx, id)
-
+	_, err := sut.FindOneByID(context.TODO(), id)
 
 	if err != ErrPostNotFound {
 		t.Fatalf("err not assert ErrPostNotFound")
@@ -222,12 +199,9 @@ func TestServiceFindOneByID_ShouldBeSuccessful_WhenDeletesValidPost(t *testing.T
 
 	sut := createNewService()
 	data := createValidPost()
+	created, _ := sut.Create(context.TODO(), data)
 
-	ctx := context.Background()
-
-	created, _ := sut.Create(ctx, data)
-
-	post, _ := sut.FindOneByID(ctx, created.ID)
+	post, _ := sut.FindOneByID(context.TODO(), created.ID)
 
 	if post.ID != created.ID {
 		t.Fatalf("Invalid post.ID")

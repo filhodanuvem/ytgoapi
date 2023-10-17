@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -11,9 +12,9 @@ import (
 type Repository interface {
 	Insert(ctx context.Context, post internal.Post) (internal.Post, error)
 	FindAll(ctx context.Context) ([]internal.Post, error)
-	FindOneByID(ctx context.Context, id string) (internal.Post, error)
+	FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error)
 	Update(ctx context.Context, post internal.Post) error
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type RepositoryPostgres struct {
@@ -34,7 +35,7 @@ func (r *RepositoryPostgres) Insert(ctx context.Context, post internal.Post) (in
 	return post, nil
 }
 
-func (r *RepositoryPostgres) Delete(ctx context.Context, id string) error {
+func (r *RepositoryPostgres) Delete(ctx context.Context, id uuid.UUID) error {
 
 	tag, err := r.Conn.Exec(
 		ctx,
@@ -95,7 +96,7 @@ func (r *RepositoryPostgres) Update(ctx context.Context, post internal.Post) err
 	return nil
 }
 
-func (r *RepositoryPostgres) FindOneByID(ctx context.Context, id string) (internal.Post, error) {
+func (r *RepositoryPostgres) FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error) {
 
 	var post internal.Post
 	err := r.Conn.QueryRow(

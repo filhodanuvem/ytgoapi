@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
+	"github.com/google/uuid"
 )
 
 var ErrPostBodyEmpty = errors.New("post body is empty")
@@ -13,6 +14,7 @@ var ErrPostBodyExceedsLimit = errors.New("post body exceeds limit")
 var ErrPostNotFound = errors.New("post not found")
 var ErrPostUsernameEmpty = errors.New("post username empty")
 var ErrIdEmpty = errors.New("id empty")
+var ErrUUIDInvalid = errors.New("uuid invalid")
 
 type Service struct {
 	Repository Repository
@@ -34,11 +36,11 @@ func (p Service) Create(ctx context.Context, post internal.Post) (internal.Post,
 	return p.Repository.Insert(ctx, post)
 }
 
-func (s Service) Delete(ctx context.Context, id string) error {
+func (s Service) Delete(ctx context.Context, id uuid.UUID) error {
 	return s.Repository.Delete(ctx, id)
 }
 
-func (s Service) FindOneByID(ctx context.Context, id string) (internal.Post, error) {
+func (s Service) FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error) {
 	return s.Repository.FindOneByID(ctx, id)
 }
 

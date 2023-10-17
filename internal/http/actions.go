@@ -10,6 +10,7 @@ import (
 	"github.com/filhodanuvem/ytgoapi/internal/database"
 	"github.com/filhodanuvem/ytgoapi/internal/post"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 var service post.Service
@@ -36,7 +37,6 @@ func PostPosts(ctx *gin.Context) {
 
 	response, err := service.Create(ctxTimeout, post)
 
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -57,12 +57,18 @@ func DeletePosts(ctx *gin.Context) {
 		return
 	}
 
+	parsedID, err := uuid.Parse(param)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error": post.ErrIdEmpty,
+		})
+		return
+	}
 
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	if err := service.Delete(ctxTimeout, param); err != nil {
-
+	if err := service.Delete(ctxTimeout, parsedID); err != nil {
 		statusCode := http.StatusInternalServerError
 		if err == post.ErrPostNotFound {
 			statusCode = http.StatusNotFound
@@ -87,12 +93,15 @@ func GetPosts(ctx *gin.Context) {
 		return
 	}
 
+	parsedID, err := uuid.Parse(param)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error": post.ErrUUIDInvalid,
+		})
+		return
+	}
 
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
-
-	p, err := service.FindOneByID(ctxTimeout, param)
-
+	p, err := service.FindOneByID(ctx, parsedID)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		if err == post.ErrPostNotFound {
