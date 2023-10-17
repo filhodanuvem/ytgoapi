@@ -2,7 +2,6 @@ package post
 
 import (
 	"context"
-	"time"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
 	"github.com/google/uuid"
@@ -12,7 +11,9 @@ import (
 
 type Repository interface {
 	Insert(ctx context.Context, post internal.Post) (internal.Post, error)
+	FindAll(ctx context.Context) ([]internal.Post, error)
 	FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error)
+	Update(ctx context.Context, post internal.Post) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
@@ -21,8 +22,6 @@ type RepositoryPostgres struct {
 }
 
 func (r *RepositoryPostgres) Insert(ctx context.Context, post internal.Post) (internal.Post, error) {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
 
 	err := r.Conn.QueryRow(
 		ctx,
@@ -37,8 +36,6 @@ func (r *RepositoryPostgres) Insert(ctx context.Context, post internal.Post) (in
 }
 
 func (r *RepositoryPostgres) Delete(ctx context.Context, id uuid.UUID) error {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
 
 	tag, err := r.Conn.Exec(
 		ctx,
@@ -52,9 +49,54 @@ func (r *RepositoryPostgres) Delete(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+func (r *RepositoryPostgres) FindAll(ctx context.Context) ([]internal.Post, error) {
+	rows, err := r.Conn.Query(
+		ctx,
+		"SELECT id, username, body, created_at FROM posts",
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var items []internal.Post
+
+	for rows.Next() {
+		var item internal.Post
+		if err := rows.Scan(&item.ID, &item.Username, &item.Body, &item.CreatedAt); err != nil {
+			// fmt.Println(err)
+			return nil, err
+		}
+
+		items = append(items, item)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+func (r *RepositoryPostgres) Update(ctx context.Context, post internal.Post) error {
+	_, err := r.Conn.Exec(
+		ctx,
+		`update "post" SET "username"= COALESCE($1, "username"), "body"= COALESCE($2, "body") where id=$3`,
+		post.Username,
+		post.Body,
+		post.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *RepositoryPostgres) FindOneByID(ctx context.Context, id uuid.UUID) (internal.Post, error) {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
 
 	var post = internal.Post{ID: id}
 	err := r.Conn.QueryRow(

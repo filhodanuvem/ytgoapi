@@ -1,7 +1,10 @@
 package http
 
 import (
+	"context"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
 	"github.com/filhodanuvem/ytgoapi/internal/database"
@@ -29,7 +32,10 @@ func PostPosts(ctx *gin.Context) {
 		return
 	}
 
-	response, err := service.Create(ctx, post)
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	response, err := service.Create(ctxTimeout, post)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -43,12 +49,26 @@ func PostPosts(ctx *gin.Context) {
 
 func DeletePosts(ctx *gin.Context) {
 	param := ctx.Param("id")
-	id, err := uuid.Parse(param)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+
+	if param == "" {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error": post.ErrIdEmpty,
+		})
+		return
 	}
 
-	if err := service.Delete(ctx, id); err != nil {
+	parsedID, err := uuid.Parse(param)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error": post.ErrIdEmpty,
+		})
+		return
+	}
+
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	if err := service.Delete(ctxTimeout, parsedID); err != nil {
 		statusCode := http.StatusInternalServerError
 		if err == post.ErrPostNotFound {
 			statusCode = http.StatusNotFound
@@ -65,12 +85,23 @@ func DeletePosts(ctx *gin.Context) {
 
 func GetPosts(ctx *gin.Context) {
 	param := ctx.Param("id")
-	id, err := uuid.Parse(param)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+
+	if param == "" {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error": post.ErrIdEmpty,
+		})
+		return
 	}
 
-	p, err := service.FindOneByID(ctx, id)
+	parsedID, err := uuid.Parse(param)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error": post.ErrUUIDInvalid,
+		})
+		return
+	}
+
+	p, err := service.FindOneByID(ctx, parsedID)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		if err == post.ErrPostNotFound {
@@ -84,4 +115,42 @@ func GetPosts(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, p)
+}
+
+func GetAll(ctx *gin.Context) {
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	posts, err := service.FindAll(ctxTimeout)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"error": http.StatusText(http.StatusInternalServerError),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"posts": posts})
+}
+
+func Update(ctx *gin.Context) {
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	var params internal.ParamsUpdatePost
+
+	if err := ctx.BindJSON(&params); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := service.Update(ctxTimeout, &params); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("user %s updated", params.ID)})
 }

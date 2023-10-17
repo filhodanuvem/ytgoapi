@@ -2,6 +2,7 @@ package post
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	"github.com/filhodanuvem/ytgoapi/internal"
@@ -14,11 +15,14 @@ import (
 
 type repositorySpy struct {
 	items map[uuid.UUID]internal.Post
+	mu    sync.Mutex
 }
 
 func (r *repositorySpy) Insert(ctx context.Context, post internal.Post) (internal.Post, error) {
 	id := uuid.New()
 
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	post.ID = id
 	r.items[id] = post
 
@@ -42,6 +46,28 @@ func (r *repositorySpy) FindOneByID(ctx context.Context, id uuid.UUID) (internal
 	return post, nil
 }
 
+func (r *repositorySpy) Update(ctx context.Context, post internal.Post) error {
+	postOld, err := r.FindOneByID(ctx, post.ID)
+	if err != nil {
+		return err
+	}
+
+	postOld.Username = post.Username
+	postOld.Body = post.Body
+
+	return nil
+}
+
+func (r *repositorySpy) FindAll(ctx context.Context) ([]internal.Post, error) {
+	var items []internal.Post
+
+	for _, v := range r.items {
+		items = append(items, v)
+	}
+
+	return items, nil
+}
+
 func (r *repositorySpy) CountEntries() int {
 	return len(r.items)
 }
@@ -57,6 +83,7 @@ func (r *repositorySpy) Clear() {
 func createRepository() *repositorySpy {
 	repo := repositorySpy{}
 	repo.items = make(map[uuid.UUID]internal.Post)
+	repo.mu = sync.Mutex{}
 	return &repo
 }
 
@@ -74,7 +101,8 @@ func createNewService() Service {
 
 func createValidPost() internal.Post {
 	return internal.Post{
-		Body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever sinc",
+		Body:     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever sinc",
+		Username: "lorem",
 	}
 }
 
@@ -96,11 +124,15 @@ func TestServiceCreate_ShouldReturnError_WhenBodyIsEmpty(t *testing.T) {
 func TestServiceCreate_ShouldReturnError_WhenBodyExceedsLimit(t *testing.T) {
 	sut := createNewService()
 	post := internal.Post{
-		Body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since",
+		Body: `Lorem I
+		ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+		psum is simply dummy t
+		ext of the printing and typesetting industry. Lorem Ipsum
+		has been the industry's standard dummy text ever since`,
+		Username: "Lorem",
 	}
 
 	_, err := sut.Create(context.TODO(), post)
-
 	if err != ErrPostBodyExceedsLimit {
 		t.Fatalf("err not assert ErrPostBodyExceedsLimit")
 	}
