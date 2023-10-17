@@ -31,7 +31,10 @@ func TestCreatePost_ShouldReturnStatusBadRequest_WhenItHasInvalidBody(t *testing
 	}
 
 	for _, p := range params {
-		resp := api.Post("/posts", p)
+		resp, err := api.Post("/posts", p)
+		if err != nil {
+			t.Fatal(err.Error())
+		}
 		if resp.StatusCode != http.StatusBadRequest {
 			t.Fatalf(
 				"Invalid Status Code. Expected Status \"%d\" and received \"%s\"",
@@ -46,7 +49,10 @@ func TestDeletePost_ShouldReturnStatusNotFound_WhenPostIdIsNotOnDatabase(t *test
 	api := NewApiClient()
 	id := uuid.NewString()
 
-	resp := api.Delete("/posts/" + id)
+	resp, err := api.Delete("/posts/" + id)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	if resp.StatusCode != http.StatusNotFound {
 		t.Fatalf(
 			"Invalid Status Code. Expected Status \"%d\" and received \"%s\"",
@@ -60,7 +66,10 @@ func TestGetPost_ShouldReturnStatusNotFound_WhenPostIdIsNotOnDatabase(t *testing
 	api := NewApiClient()
 	id := uuid.NewString()
 
-	resp := api.Get("/posts/" + id)
+	resp, err := api.Get("/posts/" + id)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	if resp.StatusCode != http.StatusNotFound {
 		t.Fatalf(
 			"Invalid Status Code. Expected Status \"%d\" and received \"%s\"",
@@ -90,7 +99,10 @@ func createSuccessfully(t *testing.T) string {
 		"body":     body,
 	}
 
-	resp := api.Post("/posts", payload)
+	resp, err := api.Post("/posts", payload)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	if resp.StatusCode != http.StatusCreated {
 		t.Fatalf(
 			"Invalid Status Code. Expected Status \"%d\" and received \"%s\"",
@@ -99,7 +111,11 @@ func createSuccessfully(t *testing.T) string {
 		)
 	}
 
-	res := api.ParseBody(resp)
+	res, err := api.ParseBody(resp)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	id := res["id"].(string)
 
 	if id == "" {
@@ -126,7 +142,10 @@ func readSuccessfully(id string, t *testing.T) {
 	username, body := happyPathData()
 	api := NewApiClient()
 
-	resp := api.Get("/posts/" + id)
+	resp, err := api.Get("/posts/" + id)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf(
 			"Invalid Status Code. Expected Status \"%d\" and received \"%s\"",
@@ -135,7 +154,11 @@ func readSuccessfully(id string, t *testing.T) {
 		)
 	}
 
-	res := api.ParseBody(resp)
+	res, err := api.ParseBody(resp)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if res["id"].(string) != id {
 		t.Fatal("Invalid ID")
 	}
@@ -158,7 +181,10 @@ func updateSuccessfully(id string, t *testing.T) {
 		"body":     "Other body",
 	}
 
-	resp := api.Put("/posts/"+id, payload)
+	resp, err := api.Put("/posts/"+id, payload)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	if resp.StatusCode != http.StatusCreated {
 		t.Fatalf(
 			"Invalid Status Code. Expected Status \"%d\" and received \"%s\"",
@@ -167,7 +193,11 @@ func updateSuccessfully(id string, t *testing.T) {
 		)
 	}
 
-	res := api.ParseBody(resp)
+	res, err := api.ParseBody(resp)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if res["id"].(string) == id {
 		t.Fatal("Invalid ID")
 	}
@@ -185,7 +215,10 @@ func deleteSuccessfully(id string, t *testing.T) {
 	t.Log("*** Delete Post")
 	api := NewApiClient()
 
-	resp := api.Delete("/posts/" + id)
+	resp, err := api.Delete("/posts/" + id)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	if resp.StatusCode != http.StatusNoContent {
 		t.Fatalf(
 			"Invalid Status Code. Expected Status \"%d\" and received \"%s\"",
